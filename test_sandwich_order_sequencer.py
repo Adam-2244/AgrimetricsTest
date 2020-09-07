@@ -37,12 +37,12 @@ class TestSandwichShopScheduler:
 
     def test_finish_day(self, capsys):
         expected_seq_num = self.scheduler.sequence_number + 1
+        prev_task_finish_time = self.scheduler.previous_task_finish_time
 
-        with freeze_time(datetime.now()) as frozen_datetime:
-            self.scheduler.finish_day()
+        self.scheduler.finish_day()
 
         captured = capsys.readouterr()
-        assert captured.out == f' {expected_seq_num}. {frozen_datetime().strftime("%M:%S")} {self.TAKE_BREAK_ACTION} \n\n'
+        assert captured.out == f' {expected_seq_num}. {prev_task_finish_time.strftime("%M:%S")} {self.TAKE_BREAK_ACTION} \n\n'
         assert self.scheduler.sequence_number == expected_seq_num
 
     def test_make_sandwich(self, capsys):
@@ -50,11 +50,10 @@ class TestSandwichShopScheduler:
         expected_seq_num = self.scheduler.sequence_number + 1
         prev_task_finish_time = self.scheduler.previous_task_finish_time
 
-        with freeze_time(datetime.now()) as frozen_datetime:
-            self.scheduler.make_sandwich(order_number=order_num)
-            captured = capsys.readouterr()
-            assert captured.out == f' {expected_seq_num}. {frozen_datetime().strftime("%M:%S")} {self.MAKE_SANDWICH_ACTION} {order_num}\n'
+        self.scheduler.make_sandwich(order_number=order_num)
+        captured = capsys.readouterr()
 
+        assert captured.out == f' {expected_seq_num}. {prev_task_finish_time.strftime("%M:%S")} {self.MAKE_SANDWICH_ACTION} {order_num}\n'
         assert self.scheduler.sequence_number == expected_seq_num
         assert self.scheduler.previous_task_finish_time == \
                prev_task_finish_time + timedelta(seconds=self.scheduler.SEC_TO_MAKE_SANDWICH)
@@ -64,11 +63,10 @@ class TestSandwichShopScheduler:
         expected_seq_num = self.scheduler.sequence_number + 1
         prev_task_finish_time = self.scheduler.previous_task_finish_time
 
-        with freeze_time(datetime.now()) as frozen_datetime:
-            self.scheduler.serve_sandwich(order_number=order_num)
-            captured = capsys.readouterr()
-            assert captured.out == f' {expected_seq_num}. {frozen_datetime().strftime("%M:%S")} {self.SERVE_SANDWICH_ACTION} {order_num}\n'
+        self.scheduler.serve_sandwich(order_number=order_num)
+        captured = capsys.readouterr()
 
+        assert captured.out == f' {expected_seq_num}. {prev_task_finish_time.strftime("%M:%S")} {self.SERVE_SANDWICH_ACTION} {order_num}\n'
         assert self.scheduler.sequence_number == expected_seq_num
         assert self.scheduler.previous_task_finish_time == \
                prev_task_finish_time + timedelta(seconds=self.scheduler.SEC_TO_SERVE_SANDWICH)
@@ -76,12 +74,12 @@ class TestSandwichShopScheduler:
     def test_take_break(self, capsys):
         expected_seq_num = self.scheduler.sequence_number + 1
         next_order = datetime.now()
+        prev_task_finish_time = self.scheduler.previous_task_finish_time
 
-        with freeze_time(datetime.now()) as frozen_datetime:
-            self.scheduler.take_break(next_order=next_order)
-            captured = capsys.readouterr()
-            assert captured.out == f' {expected_seq_num}. {frozen_datetime().strftime("%M:%S")} {self.TAKE_BREAK_ACTION} \n'
+        self.scheduler.take_break(next_order=next_order)
+        captured = capsys.readouterr()
 
+        assert captured.out == f' {expected_seq_num}. {prev_task_finish_time.strftime("%M:%S")} {self.TAKE_BREAK_ACTION} \n'
         assert self.scheduler.sequence_number == expected_seq_num
         assert self.scheduler.previous_task_finish_time == next_order
 
