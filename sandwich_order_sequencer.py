@@ -28,7 +28,7 @@ class SandwichShopScheduler:
     def __init__(self):
         self.start_time = datetime.now().replace(microsecond=0)
         self.orders = []
-        self.previous_task_finish_time = None
+        self.previous_task_finish_time = self.start_time
         self.sequence_number = 0
 
     def action(func):
@@ -43,7 +43,7 @@ class SandwichShopScheduler:
         self.print_schedule()
 
     def print_schedule(self) -> None:
-        self.reset_day()
+        self.reset_schedule()
 
         for index, order in enumerate(self.orders):
             self.maybe_take_break(next_order=order)
@@ -62,10 +62,10 @@ class SandwichShopScheduler:
         self.previous_task_finish_time = self.previous_task_finish_time + timedelta(seconds=seconds_to_complete)
 
     @action
-    def take_break(self, next_order) -> None:
+    def take_break(self, next_order: datetime) -> None:
         self.print_action(sequence_number=self.sequence_number,
-                              time=self.previous_task_finish_time,
-                              action='Take a break.')
+                          time=self.previous_task_finish_time,
+                          action='Take a break.')
 
         # A break finishes when the next order comes in.
         self.previous_task_finish_time = next_order
@@ -94,7 +94,7 @@ class SandwichShopScheduler:
                           time=self.previous_task_finish_time, action='Take a break.')
         print()
 
-    def reset_day(self) -> None:
+    def reset_schedule(self) -> None:
         self.previous_task_finish_time = self.start_time
         self.sequence_number = 0
 
