@@ -4,7 +4,7 @@ Main code:
     file "sandwich_order_sequencer.py"
 
 To run tests:
-    cmd_line = "python sandwich_order_sequencer_test.py"
+    cmd_line = pytest
 
 Example usage of library:
     scheduler = SandwichShopScheduler()
